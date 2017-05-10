@@ -1,0 +1,34 @@
+{
+  "name": "redux-sagas-studies",
+  "version": "0.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/suxxus-redux/redux-saga-studies"
+  },
+  "author": "suxxus",
+  "license": "ISC",
+  "description": "redux sagas studies",
+  "scripts": {
+    "lint": "eslint --fix --color  src || true",
+    "server": "freddie",
+    "start": "node src/scripts"
+  },
+  "keywords": [
+    "redux",
+    "sagas",
+    "node",
+    "project"
+  ],
+  "devDependencies": {
+    "eslint": "^3.19.0",
+    "eslint-cli": "^1.1.0",
+    "eslint-config-eslint": "^4.0.0",
+    "freddie": "^0.5.1",
+    "watch-cli": "^0.2.1"
+  },
+  "dependencies": {
+    "node-fetch": "^1.6.3",
+    "redux": "^3.6.0",
+    "redux-saga": "^0.15.3"
+  }
+}
