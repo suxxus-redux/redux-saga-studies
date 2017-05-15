@@ -1,6 +1,6 @@
 const { createStore, combineReducers, applyMiddleware } = require('redux');
 const createSagaMiddleware = require('redux-saga').default;
-const { all, call, put, takeEvery, select } = require('redux-saga/effects');
+const { all, call, cancel, fork, put, takeLatest, takeEvery, select } = require('redux-saga/effects');
 const fetch = require('node-fetch');
 
 (() => {
@@ -42,8 +42,8 @@ const fetch = require('node-fetch');
     // ---------------
     //  MIDDLEWARES
     // ---------------
-    const log = function *() {
-        yield takeEvery('*', function *logger(action) {
+    const log = function*() {
+        yield takeEvery('*', function* logger(action) {
             const state = yield select();
 
             console.log('action: ', action.type);
@@ -52,7 +52,7 @@ const fetch = require('node-fetch');
         });
     };
 
-    const fetchUser = function *() {
+    const fetchUser = function*() {
         try {
             const userData = yield call(fetchApi, 'http://localhost:4000/api/user', {
                 method: 'GET',
@@ -83,11 +83,16 @@ const fetch = require('node-fetch');
         }
     };
 
-    const getUser = function *() {
-        yield takeEvery('GET_USER', fetchUser);
+    const cancelApi = function*(task) {
+        yield cancel(task);
     };
 
-    const rootSaga = function *() {
+    const getUser = function*() {
+        const task = yield fork(takeEvery, 'GET_USER', fetchUser);
+        yield fork(takeLatest, 'CANCEL_API', cancelApi, task);
+    };
+
+    const rootSaga = function*() {
         yield all([
             log(),
             getUser()
@@ -109,5 +114,10 @@ const fetch = require('node-fetch');
     // -------------
     sagaMiddleware.run(rootSaga);
     store.dispatch({ type: 'GET_USER' });
+
+    // cancel api
+    setTimeout(() => {
+        store.dispatch({ type: 'CANCEL_API' });
+    }, 200)
 
 })();
